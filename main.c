@@ -32,6 +32,10 @@ main(void)
   binit();         // buffer cache
   fileinit();      // file table
   ideinit();       // disk
+
+  //setPaletee();
+  drawDesktop();
+
   if(!ismp)
     timerinit();   // uniprocessor timer
   startothers();   // start other processors
@@ -57,6 +61,7 @@ mpmain(void)
   cprintf("cpu%d: starting\n", cpunum());
   idtinit();       // load idt register
   xchg(&cpu->started, 1); // tell startothers() we're up
+
   scheduler();     // start running processes
 }
 

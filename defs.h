@@ -34,6 +34,9 @@ int             fileread(struct file*, char*, int n);
 int             filestat(struct file*, struct stat*);
 int             filewrite(struct file*, char*, int n);
 
+//font_8x16.c
+//extern unsigned char fontdata_8x16[];
+
 // fs.c
 void            readsb(int dev, struct superblock *sb);
 int             dirlink(struct inode*, char*, uint);
@@ -52,6 +55,17 @@ struct inode*   nameiparent(char*, char*);
 int             readi(struct inode*, char*, uint, uint);
 void            stati(struct inode*, struct stat*);
 int             writei(struct inode*, char*, uint, uint);
+
+//gui_first_try
+void setPaletee();
+void drawRect(uchar* p, int x, int y,
+  int width, int height, int color);
+void drawDesktop();
+void drawPixel(uchar* p, int x, int y, int color);
+void drawChacter(uchar* p, int _x, int _y, char ch, int color);
+void drawString
+(uchar* p, int _x, int _y, char* str, int color);
+void drawCursor(uchar* p, int x, int y, int color);
 
 // ide.c
 void            ideinit(void);
@@ -90,6 +104,8 @@ void            end_op();
 // mp.c
 extern int      ismp;
 void            mpinit(void);
+
+//mouse.c
 
 // picirq.c
 void            picenable(int);

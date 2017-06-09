@@ -100,6 +100,13 @@ readeflags(void)
 }
 
 static inline void
+modifyeflags(uint eflags)
+{
+  asm volatile("pushl %0; popfl": : "r"(eflags));
+  //movw 4(%%esp), %0;
+}
+
+static inline void
 loadgs(ushort v)
 {
   asm volatile("movw %0, %%gs" : : "r" (v));
