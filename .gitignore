@@ -16,3 +16,4 @@ kernelmemfs
 mkfs
 .gdbinit
 font_8x16.c
+tags/
