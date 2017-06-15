@@ -32,9 +32,12 @@ main(void)
   binit();         // buffer cache
   fileinit();      // file table
   ideinit();       // disk
+  mouseInit();     // mouse
+  kbdInit();       // kbd
 
   //setPaletee();
   drawDesktop();
+  drawCursor(16, 16);
 
   if(!ismp)
     timerinit();   // uniprocessor timer

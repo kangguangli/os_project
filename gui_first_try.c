@@ -6,15 +6,6 @@
 #include "x86.h"
 #include "memlayout.h"
 
-#define Video_Cache_Start 0xa0000
-#define Video_Cache_End   0xaffff
-
-#define Screen_Width      320
-#define Screen_Height     200
-
-#define Char_Width 8
-#define Char_Height 16
-
 extern unsigned char fontdata_8x16[];
 
 static unsigned char color_table_rgb[16 * 3] =
@@ -59,7 +50,6 @@ void drawDesktop()
   drawRect(p, Screen_Width - 3, Screen_Height - 24, 0, 21, 7);
 
   drawString(p, 30, 20, "Hello world", 0);
-  drawCursor(p, 20, 50, 1);
 }
 
 void drawRect(uchar* p, int x, int y,
@@ -130,8 +120,10 @@ void drawString
 }
 
 
-void drawCursor(uchar* p, int x, int y, int color)
+void drawCursor(int x, int y)
 {
+  uchar* p = (uchar*)P2V(Video_Cache_Start);
+
   for (int _y = 0; _y < Mouse_Shape_Height; _y++)
   {
     for (int _x = 0; _x < Mouse_Shape_Width; _x++)
@@ -140,4 +132,11 @@ void drawCursor(uchar* p, int x, int y, int color)
         p[(y + _y) * Screen_Width + x + _x] = mouse_shape[_y][_x];
     }
   }
+}
+
+//Extremly Stupid, Estimate Need
+void printInfo(char* str)
+{
+  uchar* p = (uchar*)P2V(Video_Cache_Start);
+  drawString(p, 100, 100, str, 0);
 }

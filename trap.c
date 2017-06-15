@@ -51,6 +51,7 @@ trap(struct trapframe *tf)
     if(cpunum() == 0){
       acquire(&tickslock);
       ticks++;
+      mouseHandle();
       wakeup(&ticks);
       release(&tickslock);
     }
@@ -67,6 +68,9 @@ trap(struct trapframe *tf)
     kbdintr();
     lapiceoi();
     break;
+  case T_IRQ0 + IRQ_MOUSE:
+    mouseIntr();
+    lapiceoi();
   case T_IRQ0 + IRQ_COM1:
     uartintr();
     lapiceoi();

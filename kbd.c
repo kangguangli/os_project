@@ -2,6 +2,10 @@
 #include "x86.h"
 #include "defs.h"
 #include "kbd.h"
+#include "traps.h"
+#include "spinlock.h"
+
+static struct spinlock kbd_lock;
 
 int
 kbdgetc(void)
@@ -47,4 +51,19 @@ void
 kbdintr(void)
 {
   consoleintr(kbdgetc);
+  // acquire(&kbd_lock);
+  // char c[2];
+  // c[0] = kbdgetc();
+  // c[1] = 0;
+  // printInfo(c);
+  //
+  // release(&kbd_lock);
+}
+
+void kbdInit()
+{
+  initlock(&kbd_lock, "kbd");
+
+  picenable(IRQ_KBD);
+  ioapicenable(IRQ_KBD, 0);
 }

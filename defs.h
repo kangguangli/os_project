@@ -65,7 +65,8 @@ void drawPixel(uchar* p, int x, int y, int color);
 void drawChacter(uchar* p, int _x, int _y, char ch, int color);
 void drawString
 (uchar* p, int _x, int _y, char* str, int color);
-void drawCursor(uchar* p, int x, int y, int color);
+void drawCursor(int x, int y);
+void printInfo(char* str);
 
 // ide.c
 void            ideinit(void);
@@ -85,6 +86,7 @@ void            kinit2(void*, void*);
 
 // kbd.c
 void            kbdintr(void);
+void            kbdInit();
 
 // lapic.c
 void            cmostime(struct rtcdate *r);
@@ -106,6 +108,10 @@ extern int      ismp;
 void            mpinit(void);
 
 //mouse.c
+void mouseInit();
+void mouseIntr();
+void mouseHandle();//need modify
+//extern struct _mouse_info mouse_info;
 
 // picirq.c
 void            picenable(int);
