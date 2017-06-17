@@ -31,6 +31,7 @@ OBJS = \
 	gui_first_try.o\
 	font_8x16.o\
 	mouse.o\
+	windows.o\
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf
@@ -180,6 +181,7 @@ UPROGS=\
 	_rm\
 	_sh\
 	_stressfs\
+	_usertest\
 	_usertests\
 	_wc\
 	_zombie\

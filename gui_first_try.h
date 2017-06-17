@@ -18,6 +18,7 @@ typedef struct {
 
 #define Video_Info_Store 0x1000
 
+
 struct video_info_struct
 {
   unsigned short screen_height;
@@ -31,9 +32,9 @@ struct video_info_struct
 
 struct color24
 {
-  unsigned char R;
-  unsigned char G;
   unsigned char B;
+  unsigned char G;
+  unsigned char R;
 };
 
 //#define Video_Cache_Start 0xa0000

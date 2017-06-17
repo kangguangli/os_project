@@ -62,8 +62,6 @@ struct fifo8_buf
 static struct fifo8_buf mouse_buf;
 uchar _mouse_buf[Mouse_Buf_Size];
 
-extern struct video_info_struct video_info;
-
 void mouseWait(char type);
 void mouseWrite(unsigned char _cmd);
 uchar mouseRead();

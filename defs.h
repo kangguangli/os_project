@@ -9,7 +9,9 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+
 struct color24;
+struct video_info_struct;
 
 // bio.c
 void            binit(void);
@@ -58,6 +60,7 @@ void            stati(struct inode*, struct stat*);
 int             writei(struct inode*, char*, uint, uint);
 
 //gui_first_try
+extern struct video_info_struct video_info;
 void setPaletee();
 void drawRect(struct color24* p, int x, int y,
   int width, int height, struct color24 color);
@@ -68,6 +71,9 @@ void drawString
 (struct color24* p, int _x, int _y, char* str, struct color24 color);
 void drawCursor(int x, int y);
 void initVideoInfo();
+void drawContentToContent(struct color24* src, struct color24* dst,
+  int src_x, int src_y, int src_width, int src_height, int dst_x, int dst_y,
+  int dst_width, int dst_height);
 
 // ide.c
 void            ideinit(void);
@@ -111,8 +117,7 @@ void            mpinit(void);
 //mouse.c
 void mouseInit();
 void mouseIntr();
-void mouseHandle();//need modify
-//extern struct _mouse_info mouse_info;
+void mouseHandle();
 
 // picirq.c
 void            picenable(int);

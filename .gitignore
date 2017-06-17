@@ -16,5 +16,7 @@ kernelmemfs
 mkfs
 .gdbinit
 .idea
+.ssh
+.ssh.pub
 font_8x16.c
 tags/

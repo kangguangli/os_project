@@ -9,26 +9,6 @@
 
 extern unsigned char fontdata_8x16[];
 
-static unsigned char color_table_rgb[16 * 3] =
-        {
-                0x00, 0x00, 0x00, //Black       0
-                0xff, 0x00, 0x00, //Pure Red    1
-                0x00, 0xff, 0x00, //Pure Green  2
-                0xff, 0xff, 0x00, //Pure Yellow 3
-                0x00, 0x00, 0xff, //Pure Blue   4
-                0xff, 0x00, 0xff, //Pure Purple 5
-                0x00, 0xff, 0xff, //Light Blue  6
-                0xff, 0xff, 0xff, //White       7
-                0xc6, 0xc6, 0xc5, //Grey        8
-                0x84, 0x00, 0x00, //Deep Red    9
-                0x00, 0x84, 0x00, //Deep Green  10
-                0x84, 0x84, 0x00, //Deep Yellow 11
-                0x00, 0x00, 0x84, //Deep Blue   12
-                0x84, 0x00, 0x84, //Deep Purple 13
-                0x00, 0x84, 0x84, //Deep Blue   14
-                0x84, 0x84, 0x84  //Deep Grey   15
-        };
-
 struct video_info_struct video_info;
 
 void drawDesktop()
@@ -73,7 +53,7 @@ void drawRect(struct color24* p, int x, int y,
         }
     }
 }
-
+/*
 void setPaletee()
 {
     int start = 0;
@@ -93,7 +73,7 @@ void setPaletee()
         table += 3;
     }
     modifyeflags(eflags);
-}
+}*/
 
 void drawPixel(struct color24*p, int x, int y, struct color24 color)
 {
@@ -127,7 +107,6 @@ void drawString
     }
 }
 
-
 void drawCursor(int x, int y)
 {
     struct color24* p = video_info.video_memory;
@@ -149,4 +128,14 @@ void drawCursor(int x, int y)
                 p[(y + _y) * video_info.screen_width + x + _x] = color2;
         }
     }
+}
+
+void drawContentToContent(struct color24* src, struct color24* dst,
+  int src_x, int src_y, int src_width, int src_height, int dst_x, int dst_y,
+  int dst_width, int dst_height)
+{
+    for (int i = 0; i < src_height; i++)
+      for (int j = 0; j < src_width; j++)
+        dst[(dst_y + i) * dst_width + dst_x + j]
+          = src[(src_y + i) * src_width + src_x + j];
 }
