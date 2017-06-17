@@ -35,6 +35,7 @@ struct mouse_info_struct
 {
   int x;
   int y;
+  int btn;
 };
 static struct mouse_info_struct mouse_info;
 
@@ -60,6 +61,8 @@ struct fifo8_buf
 };
 static struct fifo8_buf mouse_buf;
 uchar _mouse_buf[Mouse_Buf_Size];
+
+extern struct video_info_struct video_info;
 
 void mouseWait(char type);
 void mouseWrite(unsigned char _cmd);
@@ -215,6 +218,7 @@ void mouseIntr()
   fifoPut(&mouse_buf, inb(Port_KeyData));
   cprintf("\nMove\n");
   //cprintf("Meaningful");
+  mouseHandle();
   release(&mouse_lock);
 }
 
@@ -241,6 +245,7 @@ int mouseInfoDecode(uchar code)
     case 2:
       mouse_dec.phase = 3;
       mouse_dec.buf[1] = code;
+      return 0;
     case 3:
       mouse_dec.phase = 1;
       mouse_dec.buf[2] = code;
@@ -263,7 +268,6 @@ int mouseInfoDecode(uchar code)
 
 void mouseHandle()
 {
-  acquire(&mouse_lock);
   if (mouse_buf.size == mouse_buf.unuse_num)
     ;
   else
@@ -274,11 +278,14 @@ void mouseHandle()
       cprintf("\nmouse_dec: %d %d %d\n", mouse_dec.buf[0],
         mouse_dec.buf[1], mouse_dec.buf[2]);
       if ((mouse_dec.button & 0x01) != 0)
-        printInfo("MouseLeft");
+        mouse_info.btn = 0;
+        //printInfo("MouseLeft");
       if ((mouse_dec.button & 0x02) != 0)
-        printInfo("MouseRight");
+        mouse_info.btn = 1;
+        //printInfo("MouseRight");
       if ((mouse_dec.button & 0x04) != 0)
-        printInfo("MouseMiddle");
+        mouse_info.btn = 2;
+        //printInfo("MouseMiddle");
 
       cprintf("\nmouse_pos before: %d %d\n", mouse_info.x, mouse_info.y);
       mouse_info.x += mouse_dec.delta_x;
@@ -287,16 +294,15 @@ void mouseHandle()
 
       if (mouse_info.x < 0)
         mouse_info.x = 0;
-      if (mouse_info.x + Mouse_Shape_Width > Screen_Width)
-        mouse_info.x = Screen_Width - Mouse_Shape_Width - 1;
+      if (mouse_info.x + Mouse_Shape_Width > video_info.screen_width)
+        mouse_info.x = video_info.screen_width - Mouse_Shape_Width - 1;
       if (mouse_info.y < 0)
         mouse_info.y = 0;
-      if (mouse_info.y + Mouse_Shape_Height > Screen_Height)
-        mouse_info.y = Screen_Height - Mouse_Shape_Height - 1;
+      if (mouse_info.y + Mouse_Shape_Height > video_info.screen_height)
+        mouse_info.y = video_info.screen_height - Mouse_Shape_Height - 1;
 
       drawCursor(mouse_info.x, mouse_info.y);
       cprintf("\nmouse_pos: %d %d\n", mouse_info.x, mouse_info.y);
     }
   }
-  release(&mouse_lock);
 }

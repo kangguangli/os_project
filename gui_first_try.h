@@ -16,11 +16,32 @@ typedef struct {
     uint width;         // width in pixels ;
 } PSF_font;*/
 
-#define Video_Cache_Start 0xa0000
-#define Video_Cache_End   0xaffff
+#define Video_Info_Store 0x1000
 
-#define Screen_Width      320
-#define Screen_Height     200
+struct video_info_struct
+{
+  unsigned short screen_height;
+  unsigned short screen_width;
+  struct color24* video_memory;
+  struct color24* cache1;
+  struct color24* cache2;
+  unsigned char color_num;
+};
+
+
+struct color24
+{
+  unsigned char R;
+  unsigned char G;
+  unsigned char B;
+};
+
+//#define Video_Cache_Start 0xa0000
+//#define Video_Cache_End   0xaffff
+//
+//#define Screen_Width      320
+//#define Screen_Height     200
+
 
 #define Char_Width 8
 #define Char_Height 16

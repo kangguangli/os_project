@@ -10,9 +10,20 @@
 .code16                       # Assemble for 16-bit mode
 .globl start
 start:
-  mov     $0x13,%al
-  mov     $0x00,%ah
-  int     $0x10
+  #mov     $0x13,%al
+  #mov     $0x00,%ah
+  #int     $0x10
+  movw $0x4f01, %ax #Return Super VGA mode information
+  movw $0x4118, %cx #   1024x768     16.8M (8:8:8)
+  movw $0x1000, %di #Stroe info at 0x1000
+  int  $0x10
+
+
+  movw $0x4f02, %ax
+  movw $0x4118, %bx
+  int  $0x10
+  cmp  $0x4f, %ax
+  jne  error
 
   cli                         # BIOS enabled interrupts; disable
 
@@ -79,6 +90,9 @@ start32:
   outw    %ax, %dx
 spin:
   jmp     spin
+
+error:
+  jmp error
 
 # Bootstrap GDT
 .p2align 2                                # force 4 byte alignment

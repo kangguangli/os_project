@@ -35,6 +35,8 @@ main(void)
   mouseInit();     // mouse
   kbdInit();       // kbd
 
+  initVideoInfo();
+
   //setPaletee();
   drawDesktop();
   drawCursor(16, 16);

@@ -9,6 +9,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct color24;
 
 // bio.c
 void            binit(void);
@@ -58,15 +59,15 @@ int             writei(struct inode*, char*, uint, uint);
 
 //gui_first_try
 void setPaletee();
-void drawRect(uchar* p, int x, int y,
-  int width, int height, int color);
+void drawRect(struct color24* p, int x, int y,
+  int width, int height, struct color24 color);
 void drawDesktop();
-void drawPixel(uchar* p, int x, int y, int color);
-void drawChacter(uchar* p, int _x, int _y, char ch, int color);
+void drawPixel(struct color24* p, int x, int y, struct color24 color);
+void drawChacter(struct color24* p, int _x, int _y, char ch, struct color24 color);
 void drawString
-(uchar* p, int _x, int _y, char* str, int color);
+(struct color24* p, int _x, int _y, char* str, struct color24 color);
 void drawCursor(int x, int y);
-void printInfo(char* str);
+void initVideoInfo();
 
 // ide.c
 void            ideinit(void);

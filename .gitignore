@@ -15,5 +15,6 @@ kernel
 kernelmemfs
 mkfs
 .gdbinit
+.idea
 font_8x16.c
 tags/
