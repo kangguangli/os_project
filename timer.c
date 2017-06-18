@@ -7,6 +7,8 @@
 #include "traps.h"
 #include "x86.h"
 
+#include "message.h"
+
 #define IO_TIMER1       0x040           // 8253 Timer #1
 
 // Frequency of all three count-down timers;
@@ -29,4 +31,10 @@ timerinit(void)
   outb(IO_TIMER1, TIMER_DIV(100) % 256);
   outb(IO_TIMER1, TIMER_DIV(100) / 256);
   picenable(IRQ_TIMER);
+}
+
+void timerintr(uint ticks)
+{
+  //fifoPut(&device_buf, ticks + Timer_Offset);
+  //deviceMessageProc();
 }

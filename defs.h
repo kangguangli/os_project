@@ -10,8 +10,10 @@ struct sleeplock;
 struct stat;
 struct superblock;
 
+struct fifo_buf;
 struct color24;
 struct video_info_struct;
+struct message;
 
 // bio.c
 void            binit(void);
@@ -59,7 +61,7 @@ int             readi(struct inode*, char*, uint, uint);
 void            stati(struct inode*, struct stat*);
 int             writei(struct inode*, char*, uint, uint);
 
-//gui_first_try
+//gui
 extern struct video_info_struct video_info;
 void setPaletee();
 void drawRect(struct color24* p, int x, int y,
@@ -94,6 +96,7 @@ void            kinit2(void*, void*);
 // kbd.c
 void            kbdintr(void);
 void            kbdInit();
+void            kbdHandle(uint data);
 
 // lapic.c
 void            cmostime(struct rtcdate *r);
@@ -115,9 +118,10 @@ extern int      ismp;
 void            mpinit(void);
 
 //mouse.c
+extern struct fifo_buf device_buf;
 void mouseInit();
 void mouseIntr();
-void mouseHandle();
+void mouseHandle(uint ticks, uint data);
 
 // picirq.c
 void            picenable(int);
@@ -144,6 +148,13 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+
+
+//queue.c
+typedef uint fifo_type ;
+void fifoInit(struct fifo_buf* fifo, int size, fifo_type* buf);
+int fifoPut(struct fifo_buf* fifo, fifo_type data);
+fifo_type fifoGet(struct fifo_buf* fifo);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
@@ -182,6 +193,7 @@ void            syscall(void);
 
 // timer.c
 void            timerinit(void);
+void            timerintr(uint ticks);
 
 // trap.c
 void            idtinit(void);
@@ -209,6 +221,10 @@ void            switchuvm(struct proc*);
 void            switchkvm(void);
 int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
+
+//window.c
+void deviceMessageProc();
+void windowsManagerInit();
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))

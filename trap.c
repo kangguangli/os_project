@@ -50,7 +50,10 @@ trap(struct trapframe *tf)
   case T_IRQ0 + IRQ_TIMER:
     if(cpunum() == 0){
       acquire(&tickslock);
+
       ticks++;
+      timerintr(ticks);
+
       wakeup(&ticks);
       release(&tickslock);
     }
@@ -60,7 +63,7 @@ trap(struct trapframe *tf)
     ideintr();
     lapiceoi();
     break;
-  case T_IRQ0 + IRQ_IDE+1:
+  case T_IRQ0 + IRQ_IDE + 1:
     // Bochs generates spurious IDE1 interrupts.
     break;
   case T_IRQ0 + IRQ_KBD:
@@ -70,6 +73,7 @@ trap(struct trapframe *tf)
   case T_IRQ0 + IRQ_MOUSE:
     mouseIntr();
     lapiceoi();
+    break;
   case T_IRQ0 + IRQ_COM1:
     uartintr();
     lapiceoi();

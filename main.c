@@ -38,6 +38,7 @@ main(void)
   initVideoInfo();
 
   //setPaletee();
+  windowsManagerInit();
   drawDesktop();
   drawCursor(16, 16);
 

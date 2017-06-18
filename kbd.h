@@ -48,6 +48,7 @@ static uchar togglecode[256] =
   [0x46] SCROLLLOCK
 };
 
+//pressed 
 static uchar normalmap[256] =
 {
   NO,   0x1B, '1',  '2',  '3',  '4',  '5',  '6',  // 0x00
@@ -109,4 +110,3 @@ static uchar ctlmap[256] =
   [0x97] KEY_HOME,  [0xCF] KEY_END,
   [0xD2] KEY_INS,   [0xD3] KEY_DEL
 };
-

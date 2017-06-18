@@ -1,4 +1,4 @@
-#include "gui_first_try.h"
+#include "gui.h"
 #include "mouse.h"
 
 #include "types.h"
@@ -20,7 +20,6 @@ void drawDesktop()
     color.G = 0xFF;
     color.B = 0xFF;
     drawRect(p, 0, 0, video_info.screen_width - 1, video_info.screen_height - 29, color);
-
 }
 
 void initVideoInfo()
@@ -53,27 +52,6 @@ void drawRect(struct color24* p, int x, int y,
         }
     }
 }
-/*
-void setPaletee()
-{
-    int start = 0;
-    int end = 15;
-    int eflags = readeflags();
-    cli();
-
-    unsigned char *table = color_table_rgb;
-
-    outb(0x03c8, start);
-    int i = 0;
-    for (i = start; i <= end; i++)
-    {
-        outb(0x03c9, table[i] >> 2);
-        outb(0x03c9, table[i + 1] >> 2);
-        outb(0x03c9, table[i + 2] >> 2);
-        table += 3;
-    }
-    modifyeflags(eflags);
-}*/
 
 void drawPixel(struct color24*p, int x, int y, struct color24 color)
 {

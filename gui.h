@@ -1,5 +1,5 @@
-#ifndef GUI_FIRST_TRY
-#define GUI_FIRST_TRY
+#ifndef GUI_H
+#define GUI_H
 
 extern char _binary_font_psf_start;
 extern char _binary_font_psf_end;
@@ -36,12 +36,6 @@ struct color24
   unsigned char G;
   unsigned char R;
 };
-
-//#define Video_Cache_Start 0xa0000
-//#define Video_Cache_End   0xaffff
-//
-//#define Screen_Width      320
-//#define Screen_Height     200
 
 
 #define Char_Width 8

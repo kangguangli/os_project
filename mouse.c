@@ -5,7 +5,9 @@
 #include "traps.h"
 
 #include "mouse.h"
-#include "gui_first_try.h"
+#include "gui.h"
+#include "message.h"
+#include "queue.h"
 
 unsigned char
 mouse_shape[Mouse_Shape_Height][Mouse_Shape_Height] =
@@ -49,72 +51,18 @@ struct mouse_dec_struct
 };
 static struct mouse_dec_struct mouse_dec;
 
-#define Mouse_Buf_Size 128
-struct fifo8_buf
-{
-  uchar* buf;
-  int p;
-  int q;
-  int size;
-  int unuse_num;
-  int flags;
-};
-static struct fifo8_buf mouse_buf;
-uchar _mouse_buf[Mouse_Buf_Size];
+#define Buf_Size 128
+struct fifo_buf device_buf;
+fifo_type _device_buf[Buf_Size];
 
 void mouseWait(char type);
 void mouseWrite(unsigned char _cmd);
 uchar mouseRead();
+
 void mouseInit();
 void mouseHandle();
 void mouseIntr();
-int mouseInfoDecode(uchar code);
-
-void fifoInit(struct fifo8_buf* fifo, int size, uchar* buf);
-int fifoPut(struct fifo8_buf* fifo, uchar ch);
-uchar fifoGet(struct fifo8_buf* fifo);
-
-void fifoInit(struct fifo8_buf* fifo, int size, uchar* buf)
-{
-  fifo->size = size;
-  fifo->buf = buf;
-  fifo->unuse_num = size;
-  fifo->flags = 0;
-  fifo->p = fifo->q = 0;
-}
-
-int fifoPut(struct fifo8_buf* fifo, uchar ch)
-{
-  if (fifo->unuse_num == 0)
-  {
-    fifo->flags |= 1;
-    return -1;
-  }
-
-  fifo->buf[fifo->p] = ch;
-  fifo->p++;
-  if (fifo->p == fifo->size)
-    fifo->p = 0;
-
-  fifo->unuse_num--;
-
-  return 0;
-}
-
-uchar fifoGet(struct fifo8_buf* fifo)
-{
-  uchar data;
-  if (fifo->unuse_num == fifo->size)
-    return -1;
-
-  data = fifo->buf[fifo->q];
-  fifo->q++;
-  if (fifo->q == fifo->size)
-    fifo->q = 0;
-  fifo->unuse_num++;
-
-  return data;
-}
+int mouseInfoDecode(uint code);
 
 
 void mouseWait(char type)
@@ -197,7 +145,7 @@ void mouseInit()
   mouseWrite(0xF4);
   mouseRead();
 
-  fifoInit(&mouse_buf, Mouse_Buf_Size, _mouse_buf);
+  fifoInit(&device_buf, Buf_Size, _device_buf);
   mouse_dec.phase = 1;
 
   initlock(&mouse_lock, "mouse");
@@ -213,31 +161,34 @@ void mouseInit()
 void mouseIntr()
 {
   acquire(&mouse_lock);
-  fifoPut(&mouse_buf, inb(Port_KeyData));
-  cprintf("\nMove\n");
-  //cprintf("Meaningful");
-  mouseHandle();
+  uint data = (uint)(inb(Port_KeyData) + Mouse_Offset);
+  //cprintf("\n mouse data: %x\n", data);
+  fifoPut(&device_buf, data);
+
+  //uint data1 = fifoGet(&device_buf);
+  deviceMessageProc();
+  //mouseHandle(0, data1 - Mouse_Offset);
   release(&mouse_lock);
 }
 
-int mouseInfoDecode(uchar code)
+int mouseInfoDecode(uint code)
 {
   switch (mouse_dec.phase)
   {
     case 0:
-      cprintf("code: %d", code);
-      if ((int)code == 0xFA)
+      //cprintf("code: %d", code);
+      if (code == 0xFA)
       {
           mouse_dec.phase = 1;
-          cprintf("0XFA received");
+          //cprintf("0XFA received");
       }
       return 0;
     case 1:
-      if (((int)code & 0xc8) == 0x08)
+      if ((code & 0xc8) == 0x08)
       {
         mouse_dec.phase = 2;
         mouse_dec.buf[0] = code;
-        //cprintf("Phase1 Complete");
+        ////cprintf("Phase1 Complete");
       }
       return 0;
     case 2:
@@ -264,43 +215,38 @@ int mouseInfoDecode(uchar code)
   return -1;
 }
 
-void mouseHandle()
+void mouseHandle(uint ticks, uint data)
 {
-  if (mouse_buf.size == mouse_buf.unuse_num)
-    ;
-  else
+  //  uint i = fifoGet(&mouse_buf);
+  if (mouseInfoDecode(data) != 0)
   {
-    uchar i = fifoGet(&mouse_buf);
-    if (mouseInfoDecode(i) != 0)
-    {
-      cprintf("\nmouse_dec: %d %d %d\n", mouse_dec.buf[0],
-        mouse_dec.buf[1], mouse_dec.buf[2]);
-      if ((mouse_dec.button & 0x01) != 0)
-        mouse_info.btn = 0;
-        //printInfo("MouseLeft");
-      if ((mouse_dec.button & 0x02) != 0)
-        mouse_info.btn = 1;
-        //printInfo("MouseRight");
-      if ((mouse_dec.button & 0x04) != 0)
-        mouse_info.btn = 2;
-        //printInfo("MouseMiddle");
+    //cprintf("\nmouse_dec: %d %d %d\n", mouse_dec.buf[0],
+    //mouse_dec.buf[1], mouse_dec.buf[2]);
+    if ((mouse_dec.button & 0x01) != 0)
+    mouse_info.btn = 0;
+    //printInfo("MouseLeft");
+    if ((mouse_dec.button & 0x02) != 0)
+    mouse_info.btn = 1;
+    //printInfo("MouseRight");
+    if ((mouse_dec.button & 0x04) != 0)
+    mouse_info.btn = 2;
+    //printInfo("MouseMiddle");
 
-      cprintf("\nmouse_pos before: %d %d\n", mouse_info.x, mouse_info.y);
-      mouse_info.x += mouse_dec.delta_x;
-      mouse_info.y += mouse_dec.delta_y;
-      cprintf("\nmouse_pos after: %d %d\n", mouse_info.x, mouse_info.y);
+    //cprintf("\nmouse_pos before: %d %d\n", mouse_info.x, mouse_info.y);
+    mouse_info.x += mouse_dec.delta_x;
+    mouse_info.y += mouse_dec.delta_y;
+    //cprintf("\nmouse_pos after: %d %d\n", mouse_info.x, mouse_info.y);
 
-      if (mouse_info.x < 0)
-        mouse_info.x = 0;
-      if (mouse_info.x + Mouse_Shape_Width > video_info.screen_width)
-        mouse_info.x = video_info.screen_width - Mouse_Shape_Width - 1;
-      if (mouse_info.y < 0)
-        mouse_info.y = 0;
-      if (mouse_info.y + Mouse_Shape_Height > video_info.screen_height)
-        mouse_info.y = video_info.screen_height - Mouse_Shape_Height - 1;
+    if (mouse_info.x < 0)
+      mouse_info.x = 0;
+    if (mouse_info.x + Mouse_Shape_Width > video_info.screen_width)
+      mouse_info.x = video_info.screen_width - Mouse_Shape_Width - 1;
+    if (mouse_info.y < 0)
+      mouse_info.y = 0;
+    if (mouse_info.y + Mouse_Shape_Height > video_info.screen_height)
+      mouse_info.y = video_info.screen_height - Mouse_Shape_Height - 1;
 
-      drawCursor(mouse_info.x, mouse_info.y);
-      cprintf("\nmouse_pos: %d %d\n", mouse_info.x, mouse_info.y);
-    }
+    drawCursor(mouse_info.x, mouse_info.y);
+    //cprintf("\nmouse_pos: %d %d\n", mouse_info.x, mouse_info.y);
   }
 }

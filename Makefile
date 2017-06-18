@@ -28,10 +28,11 @@ OBJS = \
 	uart.o\
 	vectors.o\
 	vm.o\
-	gui_first_try.o\
+	gui.o\
 	font_8x16.o\
 	mouse.o\
 	windows.o\
+	queue.o\
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf
