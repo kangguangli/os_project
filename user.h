@@ -1,6 +1,7 @@
 struct stat;
 struct rtcdate;
 struct color24;
+struct message;
 
 // system calls
 int fork(void);
@@ -28,6 +29,8 @@ int uptime(void);
 int createWindow(int x, int y, int width, int height, int toolbar_x, int toolbar_y,
   int toolbar_width, int toolbar_height, struct color24* p);
 int updateWholeWindow(int id);
+int setTimer(int window_id, int id, int intervals);
+int getMessage(int id, struct message* p);
 
 // ulib.c
 int stat(char*, struct stat*);
