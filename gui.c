@@ -93,13 +93,8 @@ void drawCursor(int x, int y)
     {
         for (int _x = 0; _x < Mouse_Shape_Width; _x++)
         {
-            struct color24 color1, color2;
-            color1.R = 0;
-            color1.G = 0;
-            color1.B = 0;
-            color2.R = 0;
-            color2.G = 0;
-            color2.B = 0;
+            struct color24 color1 = {0, 0, 0};
+            struct color24 color2 = {0, 0, 0};
             if (mouse_shape[_y][_x] == 1)
                 p[(y + _y) * video_info.screen_width + x + _x] = color1;
             if (mouse_shape[_y][_x] == 2)

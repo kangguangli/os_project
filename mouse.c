@@ -8,6 +8,7 @@
 #include "gui.h"
 #include "message.h"
 #include "queue.h"
+#include "windows.h"
 
 unsigned char
 mouse_shape[Mouse_Shape_Height][Mouse_Shape_Height] =
@@ -161,13 +162,23 @@ void mouseInit()
 void mouseIntr()
 {
   acquire(&mouse_lock);
-  uint data = (uint)(inb(Port_KeyData) + Mouse_Offset);
-  //cprintf("\n mouse data: %x\n", data);
-  fifoPut(&device_buf, data);
+  uint st = inb(Port_KeyStatus);
+  //0x01 means 0x64 first bit, 0 = empty, 1 = full
+  if((st & 0x20) == 0)
+  {
+    //cprintf("\nWrong\n");
+    ;
+  }
+  else
+  {
+    uint data = (uint)(inb(Port_KeyData) + Mouse_Offset);
+    //cprintf("\n mouse data: %x\n", data);
+    fifoPut(&device_buf, data);
 
-  //uint data1 = fifoGet(&device_buf);
-  deviceMessageProc();
-  //mouseHandle(0, data1 - Mouse_Offset);
+    //uint data1 = fifoGet(&device_buf);
+    deviceMessageProc();
+    //mouseHandle(0, data1 - Mouse_Offset);
+  }
   release(&mouse_lock);
 }
 
@@ -222,14 +233,21 @@ void mouseHandle(uint ticks, uint data)
   {
     //cprintf("\nmouse_dec: %d %d %d\n", mouse_dec.buf[0],
     //mouse_dec.buf[1], mouse_dec.buf[2]);
+    struct message msg;
+
     if ((mouse_dec.button & 0x01) != 0)
-    mouse_info.btn = 0;
+    {
+      msg.type = WM_LBTNDOWN;
+    }  //mouse_info.btn = 0;
+
     //printInfo("MouseLeft");
     if ((mouse_dec.button & 0x02) != 0)
-    mouse_info.btn = 1;
+      msg.type = WM_RBTNDOWN;
+    //mouse_info.btn = 1;
     //printInfo("MouseRight");
     if ((mouse_dec.button & 0x04) != 0)
-    mouse_info.btn = 2;
+      msg.type = WM_RBTNDOWN;
+    //mouse_info.btn = 2;
     //printInfo("MouseMiddle");
 
     //cprintf("\nmouse_pos before: %d %d\n", mouse_info.x, mouse_info.y);
@@ -245,6 +263,11 @@ void mouseHandle(uint ticks, uint data)
       mouse_info.y = 0;
     if (mouse_info.y + Mouse_Shape_Height > video_info.screen_height)
       mouse_info.y = video_info.screen_height - Mouse_Shape_Height - 1;
+
+    msg.params[0] = mouse_info.x;
+    msg.params[1] = mouse_info.y;
+
+    messageHandle(msg);
 
     drawCursor(mouse_info.x, mouse_info.y);
     //cprintf("\nmouse_pos: %d %d\n", mouse_info.x, mouse_info.y);

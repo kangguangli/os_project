@@ -8,6 +8,7 @@
 #include "x86.h"
 
 #include "message.h"
+#include "windows.h"
 
 #define IO_TIMER1       0x040           // 8253 Timer #1
 
@@ -37,4 +38,9 @@ void timerintr(uint ticks)
 {
   //fifoPut(&device_buf, ticks + Timer_Offset);
   //deviceMessageProc();
+  struct message msg;
+  msg.type = WM_TIMER;
+  msg.params[0] = ticks;
+
+  messageHandle(msg);
 }

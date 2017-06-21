@@ -32,3 +32,5 @@ SYSCALL(uptime)
 
 SYSCALL(createWindow)
 SYSCALL(updateWholeWindow)
+SYSCALL(getMessage)
+SYSCALL(setTimer)

@@ -8,7 +8,8 @@
 #define WM_KEYUP 4
 #define WM_LBTNDOWN 5
 #define WM_RBTNDOWN 6
-#define WM_DESTROY 7
+#define WM_MBTNDOWN 7
+#define WM_DESTROY 8
 
 #define Mouse_Offset 512
 #define Keyboard_Offset 256

@@ -6,23 +6,32 @@
 #include "spinlock.h"
 
 #include "message.h"
+#include "windows.h"
 
 static struct spinlock kbd_lock;
 
 void
 kbdintr(void)
 {
+  //cprintf("\n kbd irq \n");
   acquire(&kbd_lock);
 
   uint st = inb(KBSTATP);
   //0x01 means 0x64 first bit, 0 = empty, 1 = full
-  if((st & KBS_DIB) == 0)
-    return;
-  uint data = inb(KBDATAP);
+  if((st & KBS_DIB) == 0 || (st & 0x20) != 0)
+  {
+    ;
+    //cprintf("\nWrong kbd\n");
+  }
+  else
+  {
+    uint data = inb(KBDATAP);
+    //cprintf("\n kbd irq \n");
 
-  fifoPut(&device_buf, data + Keyboard_Offset);
-  //consoleintr(kbdgetc);
-  deviceMessageProc();
+    fifoPut(&device_buf, data + Keyboard_Offset);
+    //consoleintr(kbdgetc);
+    deviceMessageProc();
+  }
   release(&kbd_lock);
 }
 
@@ -32,6 +41,9 @@ void kbdHandle(uint data)
   static uchar *charcode[4] = {
     normalmap, shiftmap, ctlmap, ctlmap
   };
+
+  struct message msg;
+
 
   if(data == 0xE0){
     shift |= E0ESC;
@@ -48,6 +60,11 @@ void kbdHandle(uint data)
   }
   shift |= shiftcode[data];
   shift ^= togglecode[data];
+
+  msg.type = WM_KEYDOWN;
+  msg.params[0] = shift;
+  msg.params[1] = normalmap[data];
+
   uint c = charcode[shift & (CTL | SHIFT)][data];
   if(shift & CAPSLOCK){
     if('a' <= c && c <= 'z')
@@ -55,6 +72,8 @@ void kbdHandle(uint data)
     else if('A' <= c && c <= 'Z')
       c += 'a' - 'A';
   }
+
+  messageHandle(msg);
 }
 
 void kbdInit()

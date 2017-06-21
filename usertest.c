@@ -38,8 +38,9 @@ int main(void)
   }
 
   //printf(1, "phase3\n");
+  printf(1, "user %x\n", hwnd);
   int id = createWindow(x, y, width, height, toolbar_x, toolbar_y, toolbar_width, toolbar_height,
-    hwnd, msgproc);
+    hwnd);
   //printf(1, "phase4\n");
   updateWholeWindow(id);
   //printf(1, "phase5\n");
@@ -49,5 +50,6 @@ int main(void)
 
 void msgproc(struct color24* hwnd, int type, int* params)
 {
+  printf(1, "hh\n");
   return;
 }

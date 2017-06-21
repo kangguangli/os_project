@@ -23,3 +23,5 @@
 
 #define SYS_createWindow 22
 #define SYS_updateWholeWindow 23
+#define SYS_getMessage 24
+#define SYS_setTimer 25

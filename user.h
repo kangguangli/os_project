@@ -26,7 +26,7 @@ int sleep(int);
 int uptime(void);
 
 int createWindow(int x, int y, int width, int height, int toolbar_x, int toolbar_y,
-  int toolbar_width, int toolbar_height, struct color24* p, void(*proc)(struct color24*, int, int*));
+  int toolbar_width, int toolbar_height, struct color24* p);
 int updateWholeWindow(int id);
 
 // ulib.c
