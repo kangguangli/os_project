@@ -2,6 +2,7 @@ struct stat;
 struct rtcdate;
 struct color24;
 struct message;
+struct bitmap_file_struct;
 
 // system calls
 int fork(void);
@@ -45,3 +46,6 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+
+//bitmap.c
+void readBitmap24(char* img_name, struct bitmap_file_struct* img);

@@ -64,7 +64,7 @@ int msgGet(struct window_info* wnd, struct message* p)
 
   struct message data = wnd->msg_queue[wnd->msg_q];
   wnd->msg_q++;
-  if (wnd->msg_q == wnd->msg_num)
+  if (wnd->msg_q == Max_Message_Num_Single)
     wnd->msg_q = 0;
   wnd->msg_num--;
 

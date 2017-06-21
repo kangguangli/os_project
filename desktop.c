@@ -4,39 +4,40 @@
 #include "gui.h"
 #include "windows.h"
 #include "message.h"
+#include "bitmap.h"
 
 void msgproc(struct color24*, int, int*);
 void paint(struct color24* hwnd);
 
 int main(void)
 {
-  int x = 200;
-  int y = 300;
-  int width = 100;
-  int height = 100;
+  int x = 0;
+  int y = 0;
+
 
   int toolbar_x = x;
   int toolbar_y = y;
-  int toolbar_width = width;
-  int toolbar_height = 30;
+  int toolbar_width = 0;
+  int toolbar_height =0;
 
   //printf(1, "phase1\n");
-  int size = width * height * 3;
-  struct color24* hwnd = malloc(width * height * 3);
-  struct color24 blue = {0xFF, 0, 0};
-  struct color24 green = {0, 0xFF, 0};
   //printf(1, "phase2\n");
+  //struct bitmap_file_struct img;
+  //readBitmap24("desktop.bmp", &img);
 
+  int width = 1024;
+  int height = 768;
+  struct color24* hwnd = malloc(1024*768*3);
+  // int width = 10*;
+  // int height = 10;
+  // struct color24* hwnd = malloc(width * height * 3);
+
+  struct color24 blue = {0x21, 0x21, 0x21};
   for (int i = 0; i < height; i++)
   {
     for (int j = 0; j < width; j++)
     {
-      if (i < 30)
-        hwnd[i * width + j] = blue;
-      else
-        hwnd[i * width + j] = green;
-      if (i * width + j >= size)
-        printf(1, "wrong\n");
+      hwnd[i * width + j] = blue;
     }
   }
 
@@ -78,7 +79,7 @@ int main(void)
 
 void paint(struct color24* hwnd)
 {
-  
+
 }
 
 void msgproc(struct color24* hwnd, int type, int* params)
