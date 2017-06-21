@@ -49,6 +49,8 @@ struct mouse_dec_struct
   int delta_x;
   int delta_y;
   int button;
+  uint last_clcik;
+  uchar click_flag;
 };
 static struct mouse_dec_struct mouse_dec;
 
@@ -148,6 +150,7 @@ void mouseInit()
 
   fifoInit(&device_buf, Buf_Size, _device_buf);
   mouse_dec.phase = 1;
+  mouse_dec.click_flag = 0;
 
   initlock(&mouse_lock, "mouse");
   mouse_info.x = 16;
@@ -234,10 +237,26 @@ void mouseHandle(uint ticks, uint data)
     //cprintf("\nmouse_dec: %d %d %d\n", mouse_dec.buf[0],
     //mouse_dec.buf[1], mouse_dec.buf[2]);
     struct message msg;
+    msg.type = WM_MOUSEMOVE;
 
     if ((mouse_dec.button & 0x01) != 0)
     {
       msg.type = WM_LBTNDOWN;
+      if (!mouse_dec.click_flag)
+      {
+        mouse_dec.click_flag = 1;
+        mouse_dec.last_clcik = ticks;
+      }
+      else
+      {
+
+        if (ticks - mouse_dec.last_clcik < Double_Click_Intervals)
+        {
+          cprintf("\nmouse double: %d", ticks - mouse_dec.last_clcik);
+          msg.type = WM_LDOUBLE;
+        }
+        mouse_dec.click_flag = 0;
+      }
     }  //mouse_info.btn = 0;
 
     //printInfo("MouseLeft");
@@ -246,7 +265,7 @@ void mouseHandle(uint ticks, uint data)
     //mouse_info.btn = 1;
     //printInfo("MouseRight");
     if ((mouse_dec.button & 0x04) != 0)
-      msg.type = WM_RBTNDOWN;
+      msg.type = WM_MBTNDOWN;
     //mouse_info.btn = 2;
     //printInfo("MouseMiddle");
 

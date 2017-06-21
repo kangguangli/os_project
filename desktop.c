@@ -6,6 +6,7 @@
 #include "message.h"
 
 void msgproc(struct color24*, int, int*);
+void paint(struct color24* hwnd);
 
 int main(void)
 {
@@ -73,6 +74,11 @@ int main(void)
       }
     }
   }
+}
+
+void paint(struct color24* hwnd)
+{
+  
 }
 
 void msgproc(struct color24* hwnd, int type, int* params)

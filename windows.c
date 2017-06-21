@@ -30,7 +30,7 @@ void deviceMessageProc()
   if (data >= Mouse_Offset)
   {
     //cprintf("\n mouse: %x\n", data);
-    mouseHandle(0, data - Mouse_Offset);
+    mouseHandle(timer_manager.ticks, data - Mouse_Offset);
   }
   else if (data >= Keyboard_Offset)
   {
@@ -80,6 +80,7 @@ void messageHandle(struct message msg)
   switch (msg.type)
   {
     case WM_TIMER:
+    timer_manager.ticks = msg.params[0];
       for (int i = 0; i < Max_Timer_Num; i++)
       {
         if (timer_manager.timers[i].timer_id != -1)
@@ -112,6 +113,11 @@ void messageHandle(struct message msg)
         msgPut(window_manager.focus, msg);
       break;
     case WM_MBTNDOWN:
+      if (window_manager.focus != 0)
+        msgPut(window_manager.focus, msg);
+      break;
+    case WM_LDOUBLE:
+
       if (window_manager.focus != 0)
         msgPut(window_manager.focus, msg);
       break;

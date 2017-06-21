@@ -11,6 +11,7 @@
 #define WM_MBTNDOWN 7
 #define WM_DESTROY 8
 #define WM_LDOUBLE 9
+#define WM_MOUSEMOVE 10
 
 #define Mouse_Offset 512
 #define Keyboard_Offset 256
