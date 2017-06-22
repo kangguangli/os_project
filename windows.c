@@ -247,7 +247,7 @@ int _updateWholeWindow(int id)
     wnd->height, wnd->x, wnd->y, video_info.screen_width, video_info.screen_height);
   drawContentToContent(wnd->hwnd, video_info.video_memory, 0, 0, wnd->width,
     wnd->height, wnd->x, wnd->y, video_info.screen_width, video_info.screen_height);
-  drawCursor(video_info.video_memory, mouse_info.x, mouse_info.y);
+  //drawCursor(video_info.video_memory, mouse_info.x, mouse_info.y);
 
   return 0;
 }

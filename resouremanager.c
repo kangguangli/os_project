@@ -7,6 +7,7 @@
 #include "font_8x16.h"
 #include "my_list.h"
 #include "fs.h"
+#include "bitmap.h"
 
 #define KEY_UP          0xE2
 #define KEY_DN          0xE3
@@ -41,7 +42,7 @@ char* fmtname(char *path)
   return buf;
 }
 
-int 
+int
 ls(char *path,char **fI)
 {
   char buf[512], *p;
@@ -105,7 +106,7 @@ void WinUpdate(struct color24* hwnd,int width,int height,int cursor_width,int cu
 	if(q1->num >= 1)
 	{
 	int x1 = ((q1->num % 62) - 1) * cursor_width;
-	int y1 = (q1->num / 62) * cursor_height + 20;				
+	int y1 = (q1->num / 62) * cursor_height + 20;
 	if((q1->num % 62) == 0)
 	{x1 = (62 - 1) * cursor_width;y1 = (q1->num / 62 - 1) * cursor_height + 20;}
 	drawChacter(hwnd, x1, y1, q1->ch, blue, width);
@@ -152,7 +153,7 @@ int main(void)
 	}
 	else
 	   {insert_node_to_list(ListHead, num, ' ');num++;}
-		
+
    	}
   }
   for (int i = 0; i < height; i++)
@@ -167,9 +168,9 @@ int main(void)
         printf(1, "wrong\n");
     }
   }
-	
+
   struct color24 white = {0xFF, 0xFF, 0xFF};
-  
+
   int blink = 0;
   for (int i = cursor_y; i < cursor_y + cursor_height; i++)
   {
@@ -182,6 +183,16 @@ int main(void)
   }
   //printf(1, "phase3\n");
   printf(1, "user %x\n", hwnd);
+  struct bitmap_file_struct img;
+  readBitmap24("close.bmp", &img);
+  //printf(1, "phase4%d %d\n", img.bitmap_info_header.height, img.bitmap_info_header.width);
+  for (int i = 0; i < 16; i++)
+  {
+    for (int j = 0; j < 16; j++)
+    {
+      hwnd[i * width + j] = ((struct color24*)img.buffer)[i * 16 + j];
+    }
+  }
   int id = createWindow(x, y, width, height, toolbar_x, toolbar_y, toolbar_width, toolbar_height,
     hwnd);
   //printf(1, "phase4\n");
@@ -190,12 +201,13 @@ int main(void)
   int timer_id = 0;
   int intervals = 800;//必须是10的整数倍
   setTimer(id, timer_id, intervals);
-  
+
   //printf(1, "phase5\n");
   struct message p;
 	char *ss[] = {0,0} ;
   while (1)
   {
+    int _cursor_x, _cursor_y;
     if (getMessage(id, &p) != -1)
     {
       switch (p.type)
@@ -207,7 +219,7 @@ int main(void)
 			 {
 				 if(blink == 0)
 				{
-					 hwnd[i * width + j] = red; 
+					 hwnd[i * width + j] = red;
 				}
 				else
 					 hwnd[i * width + j] = white;
@@ -218,7 +230,7 @@ int main(void)
 			if(blink == 0)
 			{
 				struct color24 blue = {0xFF, 0xFF, 0x00};
-				int num = (cursor_x / cursor_width + 1) 
+				int num = (cursor_x / cursor_width + 1)
 					+ ((cursor_y - 20) / cursor_height) * 62;
 				node_p p = search_node(ListHead,num);
 				if(p!=0)
@@ -229,13 +241,13 @@ int main(void)
 			  blink = 0;
           updateWholeWindow(id);
           break;
-        case WM_KEYDOWN:	
+        case WM_KEYDOWN:
 			  break;
         case WM_LBTNDOWN:
-			
+
 			mousePress(hwnd, cursor_pos, cursor_width, cursor_height, p, width,  x, y);
 			Windowclear(hwnd, width, height);
-			
+
 			cursor_x = cursor_pos[0];
 			cursor_y = cursor_pos[1];
 			Wchiose(hwnd, width, height, (cursor_y - 20) / cursor_height + 1);
@@ -243,10 +255,19 @@ int main(void)
 			updateWholeWindow(id);
 			 break;
         case WM_RBTNDOWN:
-			
+
 		case WM_MBTNDOWN:
 
 		case WM_LDOUBLE:
+        _cursor_x = p.params[0] - x;
+        _cursor_y = p.params[1] - y;
+        if (_cursor_x < 18 && _cursor_y< 18
+          && _cursor_x >= 0 && _cursor_y >= 0)
+        {
+          printf(1, "phase2: %d\n", id);
+          destroyWindow(id);
+          exit();
+        }
 			 if((cursor_y - 20)/ cursor_height <= 1)
 				  break;
 			 ss[0] = fileItem[(cursor_y - 20)/ cursor_height];
@@ -308,18 +329,18 @@ void mousePress(struct color24*hwnd, int *cursor_pos, int cursor_width, int curs
 			continue;
 		}
 		hwnd[i * width + j] = red;
-			
+
 	  }
 	}
-	cursor_height = cursor_height- 1 + 1;		
+	cursor_height = cursor_height- 1 + 1;
 	cursor_x = (p.params[0] - x) / Char_Width * Char_Width;
 	cursor_y = (p.params[1] - y - 20) / Char_Height * Char_Height + 20;
 	if(cursor_x >= width)
-	{ 
+	{
 		cursor_x = 0;
 		cursor_y += cursor_width;
 	}
-	
+
 	for (int i = cursor_y; i < cursor_y + cursor_height; i++)
 	{
 	for (int j = cursor_x; j < cursor_x + cursor_width; j++)
@@ -334,7 +355,7 @@ void mousePress(struct color24*hwnd, int *cursor_pos, int cursor_width, int curs
 	}
 	cursor_pos[0] = cursor_x;
 	cursor_pos[1] = cursor_y;
-	
+
 }
 
 
@@ -365,21 +386,9 @@ void Wchiose(struct color24*hwnd, int width, int height, int conel)
   for (int i = (conel - 1) * Char_Height + 20; i < (conel) * Char_Height + 20; i++)
   {
     for (int j = 0; j < width; j++)
-    {      
-        hwnd[i * width + j] = white;  
+    {
+        hwnd[i * width + j] = white;
     }
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
