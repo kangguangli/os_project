@@ -34,6 +34,4 @@ struct bitmap_file_struct
 };
 
 
-
-
 #endif

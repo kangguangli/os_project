@@ -5,9 +5,8 @@
 #include "defs.h"
 #include "x86.h"
 #include "memlayout.h"
+#include "font_8x16.h"
 
-
-extern unsigned char fontdata_8x16[];
 
 struct video_info_struct video_info;
 
@@ -85,15 +84,13 @@ void drawString
     }
 }
 
-void drawCursor(int x, int y)
+void drawCursor(struct color24* p, int x, int y)
 {
-    struct color24* p = video_info.video_memory;
-
     for (int _y = 0; _y < Mouse_Shape_Height; _y++)
     {
         for (int _x = 0; _x < Mouse_Shape_Width; _x++)
         {
-            struct color24 color1 = {0, 0, 0};
+            struct color24 color1 = {0xFF, 0xFF, 0xFF};
             struct color24 color2 = {0, 0, 0};
             if (mouse_shape[_y][_x] == 1)
                 p[(y + _y) * video_info.screen_width + x + _x] = color1;
@@ -111,4 +108,13 @@ void drawContentToContent(struct color24* src, struct color24* dst,
       for (int j = 0; j < src_width; j++)
         dst[(dst_y + i) * dst_width + dst_x + j]
           = src[(src_y + i) * src_width + src_x + j];
+}
+
+void drawScreenToScreen(struct color24* src, struct color24* dst,
+  int src_x, int src_y, int src_width, int src_height, int dst_x, int dst_y)
+{
+    for (int i = 0; i < src_height; i++)
+      for (int j = 0; j < src_width; j++)
+        dst[(dst_y + i) * video_info.screen_width + dst_x + j]
+          = src[(src_y + i) * video_info.screen_width + src_x + j];
 }

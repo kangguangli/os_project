@@ -12,4 +12,23 @@ mouse_shape[Mouse_Shape_Height][Mouse_Shape_Height];
 #define Port_KeyCmd 0x64
 #define Double_Click_Intervals 60
 
+
+struct mouse_dec_struct
+{
+  unsigned char buf[3];
+  int phase;
+  int delta_x;
+  int delta_y;
+  int button;
+  unsigned int last_clcik;
+  unsigned char click_flag;
+};
+
+struct mouse_info_struct
+{
+  int x;
+  int y;
+  int btn;
+};
+
 #endif

@@ -34,24 +34,9 @@ mouse_shape[Mouse_Shape_Height][Mouse_Shape_Height] =
 };
 
 static struct spinlock mouse_lock;
-struct mouse_info_struct
-{
-  int x;
-  int y;
-  int btn;
-};
-static struct mouse_info_struct mouse_info;
 
-struct mouse_dec_struct
-{
-  uchar buf[3];
-  int phase;
-  int delta_x;
-  int delta_y;
-  int button;
-  uint last_clcik;
-  uchar click_flag;
-};
+struct mouse_info_struct mouse_info;
+
 static struct mouse_dec_struct mouse_dec;
 
 #define Buf_Size 128
@@ -270,6 +255,12 @@ void mouseHandle(uint ticks, uint data)
     //printInfo("MouseMiddle");
 
     //cprintf("\nmouse_pos before: %d %d\n", mouse_info.x, mouse_info.y);
+    drawScreenToScreen(video_info.cache2, video_info.video_memory, mouse_info.x,
+      mouse_info.y, Mouse_Shape_Width, Mouse_Shape_Height, mouse_info.x,
+        mouse_info.y);
+    // drawContentToContent(video_info.cache2, video_info.video_memory, 0,
+    //   0, video_info.screen_width, video_info.screen_height, 0,
+    //     0, video_info.screen_width, video_info.screen_height);
     mouse_info.x += mouse_dec.delta_x;
     mouse_info.y += mouse_dec.delta_y;
     //cprintf("\nmouse_pos after: %d %d\n", mouse_info.x, mouse_info.y);
@@ -286,9 +277,10 @@ void mouseHandle(uint ticks, uint data)
     msg.params[0] = mouse_info.x;
     msg.params[1] = mouse_info.y;
 
+    drawCursor(video_info.video_memory, mouse_info.x, mouse_info.y);
     messageHandle(msg);
 
-    drawCursor(mouse_info.x, mouse_info.y);
+    //drawContentToContent(video_info.cache2, video_info.memory, )
     //cprintf("\nmouse_pos: %d %d\n", mouse_info.x, mouse_info.y);
   }
 }

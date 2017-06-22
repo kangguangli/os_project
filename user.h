@@ -32,6 +32,7 @@ int createWindow(int x, int y, int width, int height, int toolbar_x, int toolbar
 int updateWholeWindow(int id);
 int setTimer(int window_id, int id, int intervals);
 int getMessage(int id, struct message* p);
+int destroyWindow(int id);
 
 // ulib.c
 int stat(char*, struct stat*);
@@ -49,3 +50,16 @@ int atoi(const char*);
 
 //bitmap.c
 void readBitmap24(char* img_name, struct bitmap_file_struct* img);
+int decode();
+
+typedef struct mylist mylist_info;
+typedef mylist_info* node_p;
+
+struct mylist* createNode();
+node_p destory_list(node_p head);
+node_p insert_node_to_list(node_p head,int key,char ch);
+void trav_list(node_p head);
+node_p delete_node(node_p head,int key);
+node_p change_node(node_p head,int a,int b);
+node_p search_node(node_p head,int key) ;
+char *toCharArray(node_p head);

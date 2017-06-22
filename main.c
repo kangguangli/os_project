@@ -40,7 +40,7 @@ main(void)
   //setPaletee();
   windowsManagerInit();
   drawDesktop();
-  drawCursor(16, 16);
+  //drawCursor(video_info.memory, 16, 16);
 
   if(!ismp)
     timerinit();   // uniprocessor timer

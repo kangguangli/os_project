@@ -71,11 +71,13 @@ void drawPixel(struct color24* p, int x, int y, struct color24 color);
 void drawChacter(struct color24* p, int _x, int _y, char ch, struct color24 color);
 void drawString
 (struct color24* p, int _x, int _y, char* str, struct color24 color);
-void drawCursor(int x, int y);
+void drawCursor(struct color24* p, int x, int y);
 void initVideoInfo();
 void drawContentToContent(struct color24* src, struct color24* dst,
   int src_x, int src_y, int src_width, int src_height, int dst_x, int dst_y,
   int dst_width, int dst_height);
+void drawScreenToScreen(struct color24* src, struct color24* dst,
+  int src_x, int src_y, int src_width, int src_height, int dst_x, int dst_y);
 
 // ide.c
 void            ideinit(void);

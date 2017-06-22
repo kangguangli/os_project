@@ -1,12 +1,13 @@
-#include "windows.h"
-#include "gui.h"
-#include "message.h"
-
 #include "types.h"
 #include "defs.h"
 #include "param.h"
 #include "mmu.h"
 #include "proc.h"
+
+#include "windows.h"
+#include "gui.h"
+#include "message.h"
+#include "mouse.h"
 
 
 struct window_manager_struct window_manager;
@@ -77,6 +78,8 @@ int msgGet(struct window_info* wnd, struct message* p)
 
 void messageHandle(struct message msg)
 {
+  // struct window_info* p = 0;
+  // int cursor_x, cursor_y;
   switch (msg.type)
   {
     case WM_TIMER:
@@ -104,7 +107,22 @@ void messageHandle(struct message msg)
         msgPut(window_manager.focus, msg);
       break;
     case WM_LBTNDOWN:
-      //To do 判断窗口列表中哪一个是焦点所在
+      // To do 判断窗口列表中哪一个是焦点所在
+      // p = window_manager.focus;
+      // cursor_x = msg.params[0];
+      // cursor_y = msg.params[1];
+      // while (p != 0)
+      // {
+      //   if (cursor_x < p->x || cursor_y < p->y ||
+      //       cursor_x > p->x + p->width || cursor_y > p->y + p->height)
+      //   {
+      //     if (p->next != -1)
+      //       p = &window_manager.windows[p->next];
+      //   }
+      // }
+
+
+
       if (window_manager.focus != 0)
         msgPut(window_manager.focus, msg);
       break;
@@ -146,6 +164,22 @@ void windowsManagerInit()
   }
 }
 
+void updateAllWindow()
+{
+  struct message msg;
+  msg.type = WM_PAINT;
+  for (int i = 0; i < Max_Window_Num; i++)
+  {
+    cprintf("\n paint, %d\n", window_manager.windows[i].id);
+    if (window_manager.windows[i].id != -1)
+    {
+      //cprintf("\n paint, %d\n", i);
+      msgPut(&window_manager.windows[i], msg);
+    }
+  }
+}
+
+
 int _createWindow(int x, int y, int width, int height, int toolbar_x, int toolbar_y,
   int toolbar_width, int toolbar_height, struct color24* p, int pid)
   //void (*msgproc)(struct color24*, int, int*))
@@ -170,8 +204,11 @@ int _createWindow(int x, int y, int width, int height, int toolbar_x, int toolba
   //window_manager.windows[id].msg_queue = msg_queue;
   window_manager.windows[id].pid = pid;
   //window_manager.windows[id].msgproc = msgproc;
-
+  int last = 0;
+  if (window_manager.focus != 0)
+    last = window_manager.focus->id;
   window_manager.focus = &window_manager.windows[id];
+  window_manager.focus->next = last;
   //window_manager.focus = id;
   return id;
 }
@@ -201,19 +238,16 @@ int sys_createWindow()
   return id;
 }
 
+extern struct mouse_info_struct mouse_info;
 int _updateWholeWindow(int id)
 {
   struct window_info* wnd = &window_manager.windows[id];
-  // for (int i = 0; i < Max_Window_Num; i++)
-  //   if (window_manager.windows[i].id == id)
-  //   {
-  //     wnd = &window_manager.windows[i];
-  //     break;
-  //   }
+
   drawContentToContent(wnd->hwnd, video_info.cache2, 0, 0, wnd->width,
     wnd->height, wnd->x, wnd->y, video_info.screen_width, video_info.screen_height);
   drawContentToContent(wnd->hwnd, video_info.video_memory, 0, 0, wnd->width,
     wnd->height, wnd->x, wnd->y, video_info.screen_width, video_info.screen_height);
+  drawCursor(video_info.video_memory, mouse_info.x, mouse_info.y);
 
   return 0;
 }
@@ -268,5 +302,21 @@ int sys_getMessage()
   struct message* msg = (struct message*)p;
 
   return msgGet(&window_manager.windows[id], msg);
+
+}
+
+int sys_destroyWindow()
+{
+  int id;
+  argint(0, &id);
+
+  cprintf("\n id, %d\n", id);
+  window_manager.windows[id].id = -1;
+  if (window_manager.focus == &window_manager.windows[id])
+  {
+    window_manager.focus = &window_manager.windows[window_manager.focus->next];
+  }
+  updateAllWindow();
+  return 0;
 
 }

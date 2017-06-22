@@ -18,5 +18,5 @@ mkfs
 .idea
 .ssh
 .ssh.pub
-font_8x16.c
+font_8x16.h
 tags/

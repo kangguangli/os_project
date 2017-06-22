@@ -29,7 +29,6 @@ OBJS = \
 	vectors.o\
 	vm.o\
 	gui.o\
-	font_8x16.o\
 	mouse.o\
 	windows.o\
 	queue.o\
@@ -147,7 +146,7 @@ tags: $(OBJS) entryother.S _init
 vectors.S: vectors.pl
 	perl vectors.pl > vectors.S
 
-ULIB = ulib.o usys.o printf.o umalloc.o bitmap.o
+ULIB = ulib.o usys.o printf.o umalloc.o bitmap.o my_list.o
 
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
@@ -170,28 +169,25 @@ mkfs: mkfs.c fs.h
 .PRECIOUS: %.o
 
 UPROGS=\
-	_cat\
-	_echo\
-	_forktest\
-	_grep\
 	_init\
 	_kill\
 	_ln\
 	_ls\
-	_mkdir\
-	_rm\
-	_sh\
-	_stressfs\
 	_desktop\
-	_usertests\
-	_wc\
 	_zombie\
+	_game\
+	_notepad\
+	_resourcemanager\
+
 
 IMGS=\
-	#desktop.bmp\
+	bird.bmp\
+	file.bmp\
+	notepad.bmp\
+	close.bmp\
 
 fs.img: mkfs README $(IMGS) $(UPROGS)
-	./mkfs fs.img README $(IMGS) $(UPROGS)
+	./mkfs fs.img README $(UPROGS) $(IMGS)
 
 -include *.d
 
