@@ -270,9 +270,10 @@ int main(void)
         }
 			 if((cursor_y - 20)/ cursor_height <= 1)
 				  break;
-			 ss[0] = fileItem[(cursor_y - 20)/ cursor_height];
-			 ss[1] = 0;
-			 exec("notepad", ss);
+			 ss[0] = "notepad";
+			 ss[1] = fileItem[(cursor_y - 20)/ cursor_height];
+       destroyWindow(id);
+			  exec("notepad", ss);
 			 printf(1, "%d" ,(cursor_y - 20)/ cursor_height);
 			 printf(1, "%s" ,fileItem[(cursor_y - 20)/ cursor_height]);
           break;

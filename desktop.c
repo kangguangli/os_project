@@ -94,6 +94,11 @@ int main(void)
         case WM_KEYDOWN:
           break;
         case WM_LBTNDOWN:
+
+          break;
+        case WM_RBTNDOWN:
+        case WM_MBTNDOWN:
+        case WM_LDOUBLE:
           cursor_x = p.params[0] - x;
           cursor_y = p.params[1] - y;
           if (cursor_x < game_x + game_width && cursor_y < game_y + game_height
@@ -114,10 +119,6 @@ int main(void)
             if (fork() == 0)
               exec("resourcemanager", argv);
           }
-          break;
-        case WM_RBTNDOWN:
-        case WM_MBTNDOWN:
-        case WM_LDOUBLE:
           //printf(1, "\nnnn");
           break;
         case WM_PAINT:
